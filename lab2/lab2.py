@@ -1,3 +1,4 @@
+import numpy as np
 class Node():
     def __init__(self, name = "", children = [], costs = 0, profit = 0, n = 0, p = 0, selectOption = False):
         self.name = name
@@ -57,24 +58,24 @@ class Node():
         [x.describe(False) for x in self.children]
 
 
-
-def buildFactory(p1 = 0.8, p2 = 0.2, n = 5):
-    case_A = Node(name = "Побудова великого заводу", costs = 830, n = n)
+values = np.genfromtxt("Kruvui\\lab2\\lab2_data.csv",delimiter=',')
+def buildFactory(p1 = values[2], p2 = values[4], n = 5):
+    case_A = Node(name = "Побудова великого заводу", costs = values[0], n = n)
     case_A.clearChildren()
-    case_A.addChild(name = "Успіх", profit = 300, p = p1)
-    case_A.addChild(name = "Невдача", profit = -65, p = p2)
+    case_A.addChild(name = "Успіх", profit = values[1], p = p1)
+    case_A.addChild(name = "Невдача", profit = values[3], p = p2)
 
-    case_B = Node(name = "Побудова малого заводу", costs = 280, n = n)
+    case_B = Node(name = "Побудова малого заводу", costs = values[5], n = n)
     case_B.clearChildren()
-    case_B.addChild(name = "Успіх", profit = 200, p = p1)
-    case_B.addChild(name = "Невдача", profit = -60, p = p2)
+    case_B.addChild(name = "Успіх", profit = values[6], p = p1)
+    case_B.addChild(name = "Невдача", profit = values[8], p = p2)
     return [case_A, case_B]
 
 [case_A, case_B] = buildFactory()
 case_C = Node(name = "Дослідження")
 case_C.clearChildren()
-case_C.addChild(name = "Успіх", profit = 0, p = 0.75, selectOption = True, children = buildFactory(0.9, 0.1, 4))
-case_C.addChild(name = "Невдача", profit = 0, p = 0.25)
+case_C.addChild(name = "Успіх", profit = 0, p = values[11], selectOption = True, children = buildFactory(values[12],values[13], 4))
+case_C.addChild(name = "Невдача", profit = 0, p = values[11])
 
 tree = Node(name = "Рішення", children = [case_A, case_B, case_C], selectOption = True)
 tree.selectBestOption()

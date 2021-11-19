@@ -1,18 +1,15 @@
+import pandas as pd
+
 class Option():
     def __init__(self, order, count):
         self.order = order
         self.count = count
         pass
 
+df = pd.read_csv("Kruvui\\lab3\\lab3_data.csv", header=None) # relative position
+list = [Option([row[1][0],row[1][1],row[1][2]], row[1][3]) for row in df.iterrows()]
+
 candidates = ["А","Б","С"]
-list = [
-    Option(["А","Б","С"], 24),
-    Option(["А","С","Б"], 23),
-    Option(["Б","А","С"], 26),
-    Option(["Б","С","А"], 6),
-    Option(["С","А","Б"], 12),
-    Option(["С","Б","А"], 19)
-]
 
 # метод Борда
 candidatesCount = len(candidates) - 1
@@ -21,7 +18,6 @@ points = {x:sum([y.count * (candidatesCount - y.order.index(x)) for y in list]) 
 points
 bestCandidate = max(points, key = lambda item: points[item])
 print(f'Найкращий кандидат - {bestCandidate}. Він набрав {points[bestCandidate]} голосів за методом Борда')
-
 
 
 # метод Кондорсе
