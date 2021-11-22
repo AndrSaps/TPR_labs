@@ -1,7 +1,6 @@
 import numpy as np
 
 class Matrix():
-    """docstring for Matrix."""
 
     def __init__(self, values = []):
         self.values = values
@@ -29,13 +28,13 @@ class Matrix():
         print(f'При достатній кількості ігор середній виграш та середній програш гравців становить {optimal[0]}')
 
     def optimize(self):
-        optimized_1 = [[np.all(x - y>=0)  for x in self.values].count(True) == 1 for y in self.values]
-        optimized_1 = self.values[optimized_1]
-        print(f'Оптимізована матриця для 1 гравця\n{optimized_1}')
-        optimized_2 = [[np.all(x - y >=0)  for x in self.values.T].count(True) == 1 for y in self.values.T]
-        optimized_2 = self.values.T[optimized_2].T
-        print(f'Оптимізована матриця для 2 гравця\n{optimized_2}')
-        return optimized_1
+        temp = self.values
+        for i in range(len(self.values)):
+            optimized_1 = [[np.all(x - y>=0)  for x in temp].count(True) == 1 for y in temp]
+            temp = temp[optimized_1]
+            optimized_2 = [[np.all(x - y >=0)  for x in temp.T].count(True) == 1 for y in temp.T]
+            temp = temp.T[optimized_2].T
+        return temp
 
 values = np.genfromtxt("Kruvui\\lab5\\lab5_data.csv",delimiter=',')
 values
@@ -46,7 +45,7 @@ matrix.find_point()
 matrix.optimal_strategy()
 
 optimized = matrix.optimize()
-
+optimized
 
 class LinearModel:
     def __init__(self, A=np.empty([0, 0]), b=np.empty([0, 0]), c=np.empty([0, 0]), minmax="MAX"):
@@ -59,19 +58,6 @@ class LinearModel:
         self.optimalValue = None
         self.transform = False
 
-    def addA(self, A): #витрати
-        self.A = A
-
-    def addB(self, b): #запаси
-        self.b = b
-
-    def addC(self, c): #цільова
-        self.c = c
-        self.transform = False
-
-    def setPrintIter(self, printIter):
-        self.printIter = printIter
-
     def printSoln(self):
         print("\nОтримані y: ")
         print(self.x)
@@ -79,25 +65,6 @@ class LinearModel:
         print(self.optimalValue)
         print("Знайдений вектор ймовірності для першого гравця можна записати у вигляді:\n P(0.125,0,0,0.875,0)")
         print("Знайдений вектор ймовірності для другого гравця можна записати у вигляді:\n Q(0,",self.x[0],",",0,",",0,",",self.x[1],")")
-
-    def printTableau(self, tableau):
-        print("ind \t\t", end="")
-        for j in range(0, len(c)):
-            print("x_" + str(j), end="\t")
-        for j in range(0, (len(tableau[0]) - len(c) - 2)):
-            print("s_" + str(j), end="\t")
-
-        print()
-        for j in range(0, len(tableau)):
-            for i in range(0, len(tableau[0])):
-                if (not np.isnan(tableau[j, i])):
-                    if (i == 0):
-                        print(int(tableau[j, i]), end="\t")
-                    else:
-                        print(round(tableau[j, i], 2), end="\t")
-                else:
-                    print(end="\t")
-            print()
 
     def getTableau(self):
         # починаємо роботу із tableau
@@ -169,7 +136,7 @@ class LinearModel:
                 n = tableau[0, 2:].tolist().index(np.amin(tableau[0, 2:])) + 2
 
             # тест на мінімум, тоді rth змінних виходять із базису
-            minimum = 99999
+            minimum = 1000
             r = -1
             for i in range(1, len(tableau)):
                 if (tableau[i, n] > 0):
@@ -199,8 +166,8 @@ class LinearModel:
 
         self.optimalValue = -1 * tableau[0, 1]
 
-b = np.array([1, 1, 1, 1])
-c = np.array([1, 1, 1, 1, 1])
+b = np.ones(optimized.shape[0])
+c = np.ones(optimized.shape[1])
 model1 = LinearModel(optimized, b, c)
 
 model1.optimize()
